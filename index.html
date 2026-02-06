@@ -196,4 +196,20 @@ yesBtn.addEventListener("click", () => {
     page1.classList.add("hidden");
     page2.classList.remove("hidden");
     noBtn.classList.add("hidden"); // Hide No button completely on success
-    document.body.style.background = "linear-gradient(135deg, #ff08
+    document.body.style.background = "linear-gradient(135deg, #ff0844 0%, #ffb199 100%)";
+});
+
+// Falling Hearts Logic
+setInterval(() => {
+    const heart = document.createElement("span");
+    const emojis = ["💖", "💘", "💕", "❤️"];
+    heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+    document.querySelector(".hearts").appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+}, 450);
+</script>
+
+</body>
+</html>
