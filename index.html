@@ -74,13 +74,41 @@
     .hidden {
         display: none;
     }
+    #yesBtn {
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.08); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+.hearts span {
+    position: fixed;
+    bottom: -20px;
+    font-size: 24px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+    to {
+        transform: translateY(-110vh) scale(1.4);
+        opacity: 0;
+    }
+}
+
 </style>
 
 </head>
 <body>
 
 <div class="card" id="page1">
-    <h1>Will you be my Valentine?</h1>
+    <h1>Will you be my Valentine? ? 💌</h1>
     <p>Dear <span class="name">[İrem Akçay]</span> 💖</p>
 
     <div class="buttons">
@@ -97,8 +125,10 @@
         No escape, no disguise,<br>
         Just us, forever, under starlit skies.
     </p>
-    <p style="margin-top:20px;">
-        🦊🐰💖🐯🧛‍♂️🧛‍♀️
+    <p style="font-size:1.8rem;">
+    🦊🐰💞🐯🧛‍♂️🧛‍♀️
+</p>
+
     </p>
 </div>
 
@@ -132,8 +162,22 @@
         page1.classList.add("hidden");
         page2.classList.remove("hidden");
     });
+const heartContainer = document.querySelector(".hearts");
+
+setInterval(() => {
+    const heart = document.createElement("span");
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+    heartContainer.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 7000);
+}, 400);
+
 </script>
+<div class="hearts"></div>
 
 </body>
 </html>
+
 
