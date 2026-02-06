@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Irem</title>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -25,6 +26,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         width: 100%;
         max-width: 360px;
+        z-index: 2;
     }
 
     h1 {
@@ -62,6 +64,7 @@
         color: white;
         left: 50%;
         transform: translateX(-50%);
+        animation: pulse 1.8s infinite;
     }
 
     #noBtn {
@@ -74,62 +77,61 @@
     .hidden {
         display: none;
     }
-    #yesBtn {
-    animation: pulse 1.8s infinite;
-}
 
-@keyframes pulse {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.08); }
-    100% { transform: translateX(-50%) scale(1); }
-}
-.hearts span {
-    position: fixed;
-    bottom: -20px;
-    font-size: 24px;
-    animation: floatUp 6s linear infinite;
-    opacity: 0.8;
-}
-
-@keyframes floatUp {
-    from {
-        transform: translateY(0) scale(1);
-        opacity: 0.8;
+    @keyframes pulse {
+        0% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.08); }
+        100% { transform: translateX(-50%) scale(1); }
     }
-    to {
-        transform: translateY(-110vh) scale(1.4);
-        opacity: 0;
-    }
-}
 
+    /* HEARTS */
+    .hearts span {
+        position: fixed;
+        top: -30px;
+        font-size: 24px;
+        animation: fall 6s linear forwards;
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: 9999;
+    }
+
+    @keyframes fall {
+        from {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(110vh) scale(1.4);
+            opacity: 0;
+        }
+    }
 </style>
-
 </head>
+
 <body>
 
+<!-- HEART CONTAINER -->
+<div class="hearts"></div>
+
 <div class="card" id="page1">
-    <h1>Will you be my Valentine? ? 💌</h1>
+    <h1>Will you be my Valentine? 💌</h1>
     <p>Dear <span class="name">İrem Akçay</span> 💖</p>
 
     <div class="buttons">
         <button id="yesBtn">Yes 💕</button>
-        <button id="noBtn">No </button>
+        <button id="noBtn">No</button>
     </div>
 </div>
 
 <div class="card hidden" id="page2">
-    <h1>Congratulations  İrem Akçay </h1>
+    <h1>Congratulations İrem Akçay</h1>
     <p>
         Like a vampire under moonlight,<br>
         I choose you every night.<br>
         No escape, no disguise,<br>
-        I will wait forever, under this skies.
+        I will wait forever, under these skies.
     </p>
-    <p style="font-size:1.8rem;">
-    💞🧛‍♂️
-</p>
-
-    </p>
+    <p style="font-size:1.8rem;">💞🧛‍♂️</p>
 </div>
 
 <script>
@@ -138,22 +140,21 @@
     const page1 = document.getElementById("page1");
     const page2 = document.getElementById("page2");
 
-  function moveNoButton() {
-    const container = document.querySelector(".buttons");
+    function moveNoButton() {
+        const container = document.querySelector(".buttons");
 
-    const maxX = container.offsetWidth - noBtn.offsetWidth;
-    const maxY = container.offsetHeight - noBtn.offsetHeight;
+        const maxX = container.offsetWidth - noBtn.offsetWidth;
+        const maxY = container.offsetHeight - noBtn.offsetHeight;
 
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
 
-    let size = parseFloat(getComputedStyle(yesBtn).fontSize);
-    yesBtn.style.fontSize = (size + 5) + "px";
-}
-
+        let size = parseFloat(getComputedStyle(yesBtn).fontSize);
+        yesBtn.style.fontSize = (size + 5) + "px";
+    }
 
     noBtn.addEventListener("mouseover", moveNoButton);
     noBtn.addEventListener("click", moveNoButton);
@@ -162,23 +163,23 @@
         page1.classList.add("hidden");
         page2.classList.remove("hidden");
     });
-const heartContainer = document.querySelector(".hearts");
 
-setInterval(() => {
-    const heart = document.createElement("span");
-    heart.textContent = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
-    heartContainer.appendChild(heart);
+    /* HEART FALLING LOGIC */
+    document.addEventListener("DOMContentLoaded", () => {
+        const heartContainer = document.querySelector(".hearts");
+        const emojis = ["💖", "💘", "💕", "❤️"];
 
-    setTimeout(() => heart.remove(), 7000);
-}, 400);
+        setInterval(() => {
+            const heart = document.createElement("span");
+            heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+            heartContainer.appendChild(heart);
 
+            setTimeout(() => heart.remove(), 7000);
+        }, 450);
+    });
 </script>
-<div class="hearts"></div>
 
 </body>
 </html>
-
-
-
