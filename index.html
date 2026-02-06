@@ -136,6 +136,7 @@ const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
+const card = document.querySelector('.card');
 
 let noCount = 0;
 const bgColors = [
@@ -147,21 +148,35 @@ const bgColors = [
 ];
 
 function moveNoButton() {
-    // 1. Calculate safe boundaries (anywhere on screen)
+    const isMobile = window.innerWidth < 600; // Simple mobile detection
     const padding = 20;
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+    let maxX, maxY, offsetX, offsetY;
 
-    // 2. Get Yes button position to avoid it
+    if (isMobile) {
+        // On mobile, restrict movement within the card area
+        const cardRect = card.getBoundingClientRect();
+        maxX = cardRect.width - noBtn.offsetWidth - padding;
+        maxY = cardRect.height - noBtn.offsetHeight - padding;
+        offsetX = cardRect.left;
+        offsetY = cardRect.top;
+    } else {
+        // On desktop, allow movement across the full screen
+        maxX = window.innerWidth - noBtn.offsetWidth - padding;
+        maxY = window.innerHeight - noBtn.offsetHeight - padding;
+        offsetX = 0;
+        offsetY = 0;
+    }
+
+    // Get Yes button position to avoid it
     const yesRect = yesBtn.getBoundingClientRect();
 
     let newX, newY;
     let attempts = 0;
 
-    // 3. Try finding a spot that doesn't overlap with the Yes button
+    // Try finding a spot that doesn't overlap with the Yes button
     do {
-        newX = Math.random() * maxX;
-        newY = Math.random() * maxY;
+        newX = offsetX + Math.random() * maxX;
+        newY = offsetY + Math.random() * maxY;
         attempts++;
     } while (
         // Check if the new No position overlaps with Yes button (+ some buffer)
@@ -176,13 +191,13 @@ function moveNoButton() {
     noBtn.style.top = newY + "px";
     noBtn.style.transform = "none"; // Remove the initial centering
 
-    // 4. Make Yes button grow
+    // Make Yes button grow
     let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
     yesBtn.style.fontSize = (currentSize + 3) + "px";
     yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).paddingTop) + 2) + "px " + 
                            (parseFloat(window.getComputedStyle(yesBtn).paddingLeft) + 5) + "px";
 
-    // 5. Change background color
+    // Change background color
     noCount++;
     if (noCount < bgColors.length) {
         document.body.style.background = bgColors[noCount];
