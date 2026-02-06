@@ -17,67 +17,75 @@
         margin: 0;
         padding: 20px;
         overflow: hidden;
+        /* Custom Heart Cursor */
         cursor: url('https://cdn-icons-png.flaticon.com/16/2107/2107845.png'), auto;
+        transition: background 0.5s ease;
     }
 
     .card {
         background: rgba(255, 255, 255, 0.9);
-        padding: 24px;
+        backdrop-filter: blur(5px);
+        padding: 30px;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         width: 100%;
-        max-width: 360px;
+        max-width: 400px;
         z-index: 2;
         border: 2px solid white;
     }
 
-    h1 { font-size: 1.6rem; }
-    p { font-size: 1.05rem; }
+    h1 { font-size: 1.8rem; margin-bottom: 15px; }
+    p { font-size: 1.1rem; line-height: 1.5; }
 
     .name {
         color: #e91e63;
         font-weight: bold;
     }
 
-    .buttons {
-        margin-top: 25px;
-        position: relative;
-        height: 180px;
+    .buttons-container {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        min-height: 100px;
     }
 
     button {
-        font-size: 1.1rem;
-        padding: 14px 26px;
+        font-size: 1.2rem;
+        padding: 15px 30px;
         border: none;
-        border-radius: 30px;
+        border-radius: 50px;
         cursor: inherit;
-        position: absolute;
-        transition: all 0.25s ease;
+        transition: all 0.2s ease;
     }
 
     #yesBtn {
         background: #e91e63;
         color: white;
-        left: 50%;
-        top: 10px;
-        transform: translateX(-50%);
-        animation: pulse 1.8s infinite;
+        position: relative; /* Stays in the card flow */
         z-index: 10;
+        animation: pulse 1.8s infinite;
+        white-space: nowrap;
     }
 
     #noBtn {
         background: #ccc;
         color: #333;
-        left: 20%;
-        top: 110px;
+        position: fixed; /* Allows it to fly anywhere on screen */
+        z-index: 100;
+        /* Initial position */
+        left: 50%;
+        top: 75%;
+        transform: translateX(-50%);
     }
 
     .hidden { display: none; }
 
     @keyframes pulse {
-        0% { transform: translateX(-50%) scale(1); }
-        50% { transform: translateX(-50%) scale(1.08); }
-        100% { transform: translateX(-50%) scale(1); }
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
     }
 
     .hearts span {
@@ -85,20 +93,19 @@
         top: -30px;
         font-size: 24px;
         animation: fall 6s linear forwards;
-        opacity: 0.9;
+        opacity: 0.8;
         pointer-events: none;
         z-index: 9999;
     }
 
     @keyframes fall {
         to {
-            transform: translateY(110vh) scale(1.4);
+            transform: translateY(110vh) rotate(360deg);
             opacity: 0;
         }
     }
 </style>
 </head>
-
 <body>
 
 <div class="hearts"></div>
@@ -107,7 +114,7 @@
     <h1>Will you be my Valentine? 💌</h1>
     <p>Dear <span class="name">İrem Akçay</span> 💖</p>
 
-    <div class="buttons">
+    <div class="buttons-container">
         <button id="yesBtn">Yes 💕</button>
         <button id="noBtn">No</button>
     </div>
@@ -121,7 +128,7 @@
         No escape, no disguise,<br>
         I will wait forever, under these skies.
     </p>
-    <p style="font-size:1.8rem;">💞🧛‍♂️</p>
+    <p style="font-size:2.5rem;">💞🧛‍♂️</p>
 </div>
 
 <script>
@@ -130,36 +137,56 @@ const yesBtn = document.getElementById("yesBtn");
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
 
-function isOverlapping(a, b) {
-    const r1 = a.getBoundingClientRect();
-    const r2 = b.getBoundingClientRect();
-    return !(
-        r1.right < r2.left ||
-        r1.left > r2.right ||
-        r1.bottom < r2.top ||
-        r1.top > r2.bottom
-    );
-}
+let noCount = 0;
+const bgColors = [
+    "linear-gradient(135deg, #ffb6c1, #ffc0cb)",
+    "linear-gradient(135deg, #ff9a9e, #fad0c4)",
+    "linear-gradient(135deg, #ff758c, #ff7eb3)",
+    "linear-gradient(135deg, #f093fb, #f5576c)",
+    "linear-gradient(135deg, #e91e63, #880e4f)"
+];
 
 function moveNoButton() {
-    const container = document.querySelector(".buttons");
-    const maxX = container.offsetWidth - noBtn.offsetWidth;
-    const maxY = container.offsetHeight - noBtn.offsetHeight;
+    // 1. Calculate safe boundaries (anywhere on screen)
+    const padding = 20;
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-    let tries = 0;
-    let x, y;
+    // 2. Get Yes button position to avoid it
+    const yesRect = yesBtn.getBoundingClientRect();
 
+    let newX, newY;
+    let attempts = 0;
+
+    // 3. Try finding a spot that doesn't overlap with the Yes button
     do {
-        x = Math.random() * maxX;
-        y = Math.random() * maxY;
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
-        tries++;
-    } while (isOverlapping(noBtn, yesBtn) && tries < 50);
+        newX = Math.random() * maxX;
+        newY = Math.random() * maxY;
+        attempts++;
+    } while (
+        // Check if the new No position overlaps with Yes button (+ some buffer)
+        newX < yesRect.right + 50 &&
+        newX + noBtn.offsetWidth > yesRect.left - 50 &&
+        newY < yesRect.bottom + 50 &&
+        newY + noBtn.offsetHeight > yesRect.top - 50 &&
+        attempts < 100
+    );
 
-    // Grow Yes safely
-    let size = parseFloat(getComputedStyle(yesBtn).fontSize);
-    yesBtn.style.fontSize = (size + 4) + "px";
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+    noBtn.style.transform = "none"; // Remove the initial centering
+
+    // 4. Make Yes button grow
+    let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+    yesBtn.style.fontSize = (currentSize + 3) + "px";
+    yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).paddingTop) + 2) + "px " + 
+                           (parseFloat(window.getComputedStyle(yesBtn).paddingLeft) + 5) + "px";
+
+    // 5. Change background color
+    noCount++;
+    if (noCount < bgColors.length) {
+        document.body.style.background = bgColors[noCount];
+    }
 }
 
 noBtn.addEventListener("mouseover", moveNoButton);
@@ -168,23 +195,5 @@ noBtn.addEventListener("click", moveNoButton);
 yesBtn.addEventListener("click", () => {
     page1.classList.add("hidden");
     page2.classList.remove("hidden");
-    document.body.style.background =
-        "linear-gradient(135deg, #ff0844 0%, #ffb199 100%)";
-});
-
-// Hearts
-const heartContainer = document.querySelector(".hearts");
-const emojis = ["💖", "💘", "💕", "❤️"];
-
-setInterval(() => {
-    const heart = document.createElement("span");
-    heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (4 + Math.random() * 3) + "s";
-    heartContainer.appendChild(heart);
-    setTimeout(() => heart.remove(), 7000);
-}, 450);
-</script>
-
-</body>
-</html>
+    noBtn.classList.add("hidden"); // Hide No button completely on success
+    document.body.style.background = "linear-gradient(135deg, #ff08
